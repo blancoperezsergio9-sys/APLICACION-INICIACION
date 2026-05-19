@@ -1,0 +1,209 @@
+import React, { useState, useEffect } from 'react';
+import {
+  User, ClipboardList, Users, Activity, Award, Star,
+  Zap, Lightbulb, Sun, Moon, CheckCircle2, MessageSquare,
+  ChevronRight, Info
+} from 'lucide-react';
+
+// --- MOCK DATA & CONSTANTS ---
+const CONSEJOS = [
+  "La multilateralidad reduce el riesgo de lesiones por sobreuso en un 40%.",
+  "El cerebro infantil se beneficia de probar diferentes patrones de movimiento antes de los 12 años.",
+  "Evitar la especialización temprana previene el 'burnout' (agotamiento) deportivo.",
+  "Jugar a atrapar desarrolla la misma coordinación que deportes de raqueta complejos.",
+  "El éxito a los 8 años no predice el éxito a los 18. ¡Deja que exploren!"
+];
+
+const FEED_LOGROS = [
+  { id: 1, niño: "Leo", titulo: "Explorador de Alturas", desc: "Completó la sesión de saltos con aterrizaje estable.", icono: "🚀" },
+  { id: 2, niño: "Leo", titulo: "Maestro de Lanzamientos", desc: "Logró coordinar el paso de impulso con el tiro de jabalina blanda.", icono: "🎯" },
+  { id: 3, niño: "Leo", titulo: "Diversificación Semanal", desc: "Probó con éxito: Natación, Atletismo y Judo.", icono: "🌈" }
+];
+
+const ATLETAS_ENTRENADOR = [
+  { id: 1, nombre: "Lucía", especialidad: "Velocidad", mision: "El Desafío del Canguro" },
+  { id: 2, nombre: "Mateo", especialidad: "Salto", mision: "Aterrizaje Ninja" },
+  { id: 3, nombre: "Sofía", especialidad: "Lanzamiento", mision: "Honda de David" }
+];
+
+// --- COMPONENTES INTERNOS ---
+
+const SkillRadar = ({ habilidades, darkMode }) => {
+  const max = 100;
+  // Lógica de equilibrio: Si la desviación es pequeña, el nivel sube.
+  const valores = Object.values(habilidades);
+  const minVal = Math.min(...valores);
+  const esEquilibrado = (Math.max(...valores) - minVal) < 25;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative w-48 h-48 flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-full">
+        {/* Vértice: Carrera */}
+        <div className="absolute top-0 flex flex-col items-center" style={{ transform: 'translateY(-20px)' }}>
+          <span className="text-[10px] font-bold uppercase text-red-500">Carrera</span>
+          <div className="w-3 bg-red-500 rounded-full transition-all duration-700" style={{ height: `${habilidades.carreras}px` }} />
+        </div>
+        {/* Vértice: Salto */}
+        <div className="absolute bottom-0 left-0 flex flex-col items-center" style={{ transform: 'translate(-10px, 10px)' }}>
+          <div className="w-3 bg-blue-500 rounded-full transition-all duration-700" style={{ height: `${habilidades.saltos}px` }} />
+          <span className="text-[10px] font-bold uppercase text-blue-500">Salto</span>
+        </div>
+        {/* Vértice: Lanzamiento */}
+        <div className="absolute bottom-0 right-0 flex flex-col items-center" style={{ transform: 'translate(10px, 10px)' }}>
+          <div className="w-3 bg-amber-500 rounded-full transition-all duration-700" style={{ height: `${habilidades.lanzamientos}px` }} />
+          <span className="text-[10px] font-bold uppercase text-amber-500">Lanz.</span>
+        </div>
+       
+        <div className={`text-center ${darkMode ? 'text-white' : 'text-slate-800'}`}>
+          <p className="text-xs font-bold">Nivel</p>
+          <p className="text-2xl font-black">{esEquilibrado ? 'A+' : 'B'}</p>
+        </div>
+      </div>
+      <p className={`mt-4 text-xs font-medium px-3 py-1 rounded-full ${esEquilibrado ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+        {esEquilibrado ? "✨ Desarrollo Equilibrado" : "⚖️ Busca Variedad Motriz"}
+      </p>
+    </div>
+  );
+};
+
+export default function DecaKidsApp() {
+  const [activeTab, setActiveTab] = useState('atleta');
+  const [darkMode, setDarkMode] = useState(false);
+  const [pildoraIdx, setPildoraIdx] = useState(0);
+
+  useEffect(() => {
+    setPildoraIdx(Math.floor(Math.random() * CONSEJOS.length));
+  }, [activeTab]);
+
+  const toggleDarkMode = () => setDarkMode(!darkMode);
+
+  return (
+    <div className={`${darkMode ? 'dark bg-slate-950' : 'bg-slate-50'} min-h-screen font-sans transition-colors duration-300`}>
+     
+      {/* HEADER */}
+      <header className="max-w-md mx-auto p-6 flex justify-between items-center">
+        <div>
+          <h1 className={`text-2xl font-black ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            Deca<span className="text-emerald-500">Kids</span>
+          </h1>
+          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Multi-Sport Dev</p>
+        </div>
+        <button
+          onClick={toggleDarkMode}
+          className={`p-2 rounded-xl ${darkMode ? 'bg-slate-800 text-yellow-400' : 'bg-white text-slate-600 shadow-sm border'}`}
+        >
+          {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+      </header>
+
+      <main className="max-w-md mx-auto px-4 pb-24">
+       
+        {/* VISTA: PERFIL DEL ATLETA */}
+        {activeTab === 'atleta' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+            <div className={`p-6 rounded-3xl ${darkMode ? 'bg-slate-900' : 'bg-white'} shadow-xl border border-slate-100 dark:border-slate-800`}>
+              <h2 className={`text-lg font-bold mb-6 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-800'}`}>
+                <Activity className="text-emerald-500" /> Mi Perfil Motriz
+              </h2>
+              <SkillRadar habilidades={{ carreras: 85, saltos: 45, lanzamientos: 70 }} darkMode={darkMode} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className={`p-4 rounded-2xl ${darkMode ? 'bg-slate-900' : 'bg-white shadow-sm'}`}>
+                <Award className="text-purple-500 mb-2" />
+                <p className={`text-sm font-bold ${darkMode ? 'text-white' : ''}`}>Insignia de Vuelo</p>
+                <p className="text-[10px] text-slate-500 font-medium">Salto con pértiga adaptado</p>
+              </div>
+              <div className={`p-4 rounded-2xl ${darkMode ? 'bg-slate-900' : 'bg-white shadow-sm'}`}>
+                <Star className="text-yellow-500 mb-2" />
+                <p className={`text-sm font-bold ${darkMode ? 'text-white' : ''}`}>Multisport-3</p>
+                <p className="text-[10px] text-slate-500 font-medium">3 deportes en 1 semana</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* VISTA: PANEL ENTRENADOR */}
+        {activeTab === 'entrenador' && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
+            <h2 className={`text-xl font-black mb-4 ${darkMode ? 'text-white' : 'text-slate-800'}`}>Pista de Entrenamiento</h2>
+            {ATLETAS_ENTRENADOR.map((atleta) => (
+              <div key={atleta.id} className={`p-4 rounded-2xl ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} border shadow-sm`}>
+                <div className="flex justify-between items-center mb-3">
+                  <span className={`font-bold ${darkMode ? 'text-white' : ''}`}>{atleta.nombre}</span>
+                  <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-lg font-bold uppercase">{atleta.mision}</span>
+                </div>
+                <div className="flex gap-2">
+                  {['En proceso', 'Dominado', 'Excelente'].map((status, i) => (
+                    <button key={i} className={`flex-1 text-[9px] font-bold py-2 rounded-lg border transition-all ${
+                      darkMode ? 'border-slate-700 text-slate-400 hover:bg-slate-800' : 'border-slate-200 text-slate-500 hover:bg-slate-50'
+                    }`}>
+                      {status}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* VISTA: FAMILIAR */}
+        {activeTab === 'familia' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+            {/* Píldora Educativa */}
+            <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-5 rounded-3xl text-white shadow-lg shadow-emerald-200 dark:shadow-none">
+              <div className="flex items-center gap-2 mb-2">
+                <Lightbulb size={18} />
+                <span className="text-xs font-bold uppercase tracking-tighter">Píldora del Especialista</span>
+              </div>
+              <p className="text-sm font-medium leading-tight italic">"{CONSEJOS[pildoraIdx]}"</p>
+            </div>
+
+            {/* Muro de Logros */}
+            <div className="space-y-4">
+              <h3 className={`font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-800'}`}>
+                <MessageSquare size={18} className="text-blue-500" /> Muro de Logros Técnicos
+              </h3>
+              {FEED_LOGROS.map((logro) => (
+                <div key={logro.id} className={`p-4 rounded-2xl flex gap-4 ${darkMode ? 'bg-slate-900' : 'bg-white shadow-sm border'}`}>
+                  <div className="text-2xl">{logro.icono}</div>
+                  <div>
+                    <h4 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-slate-800'}`}>{logro.titulo}</h4>
+                    <p className="text-xs text-slate-500 mt-0.5">{logro.desc}</p>
+                    <span className="text-[9px] text-emerald-500 font-bold mt-2 block uppercase tracking-widest">Hito Técnico Logrado</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      {/* NAVEGACIÓN INFERIOR */}
+      <nav className={`fixed bottom-0 left-0 right-0 p-4 border-t transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+        <div className="max-w-md mx-auto flex justify-between items-center px-4">
+          <NavButton active={activeTab === 'atleta'} onClick={() => setActiveTab('atleta')} icon={<User size={20} />} label="Atleta" darkMode={darkMode} />
+          <NavButton active={activeTab === 'entrenador'} onClick={() => setActiveTab('entrenador')} icon={<ClipboardList size={20} />} label="Coach" darkMode={darkMode} />
+          <NavButton active={activeTab === 'familia'} onClick={() => setActiveTab('familia')} icon={<Users size={20} />} label="Familia" darkMode={darkMode} />
+        </div>
+      </nav>
+    </div>
+  );
+}
+
+function NavButton({ active, onClick, icon, label, darkMode }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex flex-col items-center gap-1 transition-all ${
+        active
+          ? 'text-emerald-500 scale-110'
+          : (darkMode ? 'text-slate-600' : 'text-slate-400')
+      }`}
+    >
+      {icon}
+      <span className="text-[10px] font-bold uppercase tracking-tighter">{label}</span>
+    </button>
+  );
+}
